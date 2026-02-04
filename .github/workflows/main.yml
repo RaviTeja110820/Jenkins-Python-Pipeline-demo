@@ -1,0 +1,55 @@
+name: workflow variables
+
+on:
+ push:    # Trigger workflow when code is pushed
+
+env:      # 🌍 Workflow-level variable (available to all jobs and steps)
+ PYTHON_VERSION: 3.9
+
+jobs:
+
+  job1:
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v5
+      with:
+       python-version: ${{ env.PYTHON_VERSION }}  # Using workflow variable
+
+
+  job2:
+   runs-on: ubuntu-latest
+
+   env:    # 🧩 Job-level variable (available only inside job2)
+     MYJOB-PYTHON-VERSION: 3.8
+
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup python ${{ env.MYJOB-PYTHON-VERSION }}
+      uses: actions/setup-python@v5
+      with:
+       python-version: ${{ env.MYJOB-PYTHON-VERSION }}  # Using job variable
+
+
+  job3:
+   runs-on: ubuntu-latest
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup python
+      env:   # 🔹 Step-level variable (available only for this step)
+       MYSTEP-PYTHON-VERSION: 3.11
+      uses: actions/setup-python@v5
+      with:
+       python-version: ${{ env.MYSTEP-PYTHON-VERSION }}
+
+    - name: Print a message
+      env:
+       APPLICATION: python   # Step variable
+      run: echo "The application installed is $APPLICATION"
